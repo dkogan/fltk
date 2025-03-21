@@ -29,6 +29,8 @@
 void Fl_Slider::_Fl_Slider() {
   slider_size_ = 0;
   slider_ = 0; // FL_UP_BOX;
+
+  flags.log = 0;
 }
 
 /**
@@ -111,21 +113,41 @@ void Fl_Slider::draw_bg(int X, int Y, int W, int H) {
 
 static double val_linear01_from_value(const double value,
                                       const double min,
-                                      const double max) {
+                                      const double max,
+                                      const bool use_log) {
   if (min == max)
     return 0.5;
 
   const double val_linear01 =
+    use_log ?
+    log(value/min) / log(max/min) :
     (value-min)/(max-min);
   if (val_linear01 > 1.0) return 1.0;
   if (val_linear01 < 0.0) return 0.0;
   return val_linear01;
 }
 
+static double value_from_val_linear01(const double val_linear01,
+                                      const double min,
+                                      const double max,
+                                      const bool use_log) {
+  if (min == max)
+    return min;
+
+  const double value =
+    use_log ?
+      (min * exp(val_linear01*log(max/min))) :
+      (min + val_linear01*(max-min));
+  if (value > max) return max;
+  if (value < min) return min;
+  return value;
+}
+
 void Fl_Slider::draw(int X, int Y, int W, int H) {
 
   const double val_linear01 =
-    val_linear01_from_value(value(), minimum(), maximum());
+    val_linear01_from_value(value(), minimum(), maximum(),
+                            flags.log);
 
   int length_px = (horizontal() ? W : H);
   int handle_start_edge_px, handle_size_px;
@@ -235,7 +257,8 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
   case FL_DRAG: {
 
     const double val_linear01 =
-      val_linear01_from_value(value(), minimum(), maximum());
+      val_linear01_from_value(value(), minimum(), maximum(),
+                              flags.log);
 
     int length_px = (horizontal() ? W : H);
     int mx = (horizontal() ? Fl::event_x()-X : Fl::event_y()-Y);
@@ -280,7 +303,10 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
         handle_start_edge_px = length_px-handle_size_px;
         offcenter = mx-handle_start_edge_px; if (offcenter > handle_size_px) offcenter = handle_size_px;
       }
-      v = round(handle_start_edge_px*(maximum()-minimum())/(length_px-handle_size_px) + minimum());
+
+      v = round( value_from_val_linear01( (double)handle_start_edge_px/ (double)(length_px-handle_size_px),
+                                          minimum(), maximum(), flags.log ));
+
       // make sure a click outside the sliderbar moves it:
       if (event == FL_PUSH && v == value()) {
         offcenter = handle_size_px/2;
