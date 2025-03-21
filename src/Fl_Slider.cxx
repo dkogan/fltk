@@ -102,41 +102,61 @@ void Fl_Slider::draw_bg(int X, int Y, int W, int H) {
   fl_pop_clip();
 
   Fl_Color black = active_r() ? FL_FOREGROUND_COLOR : FL_INACTIVE_COLOR;
-  if (type() == FL_VERT_NICE_SLIDER) {
+  if (type_no_log() == FL_VERT_NICE_SLIDER) {
     draw_box(FL_THIN_DOWN_BOX, X+W/2-2, Y, 4, H, black);
-  } else if (type() == FL_HOR_NICE_SLIDER) {
+  } else if (type_no_log() == FL_HOR_NICE_SLIDER) {
     draw_box(FL_THIN_DOWN_BOX, X, Y+H/2-2, W, 4, black);
   }
 }
 
 static double val_linear01_from_value(const double value,
                                       const double min,
-                                      const double max) {
+                                      const double max,
+                                      const bool use_log) {
   if (min == max)
     return 0.5;
 
   const double val_linear01 =
+    use_log ?
+    log(value/min) / log(max/min) :
     (value-min)/(max-min);
   if (val_linear01 > 1.0) return 1.0;
   if (val_linear01 < 0.0) return 0.0;
   return val_linear01;
 }
 
+static double value_from_val_linear01(const double val_linear01,
+                                      const double min,
+                                      const double max,
+                                      const bool use_log) {
+  if (min == max)
+    return min;
+
+  const double value =
+    use_log ?
+      (min * exp(val_linear01*log(max/min))) :
+      (min + val_linear01*(max-min));
+  if (value > max) return max;
+  if (value < min) return min;
+  return value;
+}
+
 void Fl_Slider::draw(int X, int Y, int W, int H) {
 
   const double val_linear01 =
-    val_linear01_from_value(value(), minimum(), maximum());
+    val_linear01_from_value(value(), minimum(), maximum(),
+                            type() & FL_LOG_SLIDER);
 
   int length_px = (horizontal() ? W : H);
   int handle_start_edge_px, handle_size_px;
-  if (type()==FL_HOR_FILL_SLIDER || type() == FL_VERT_FILL_SLIDER) {
+  if (type_no_log()==FL_HOR_FILL_SLIDER || type_no_log() == FL_VERT_FILL_SLIDER) {
     handle_size_px = int(val_linear01*length_px+.5);
     if (minimum()>maximum()) {handle_size_px = length_px-handle_size_px; handle_start_edge_px = length_px-handle_size_px;}
     else handle_start_edge_px = 0;
   } else {
     handle_size_px = int(slider_size_*length_px+.5);
     int handle_size_min_px = (horizontal() ? H : W)/2+1;
-    if (type()==FL_VERT_NICE_SLIDER || type()==FL_HOR_NICE_SLIDER) handle_size_min_px += 4;
+    if (type_no_log()==FL_VERT_NICE_SLIDER || type_no_log()==FL_HOR_NICE_SLIDER) handle_size_min_px += 4;
     if (handle_size_px < handle_size_min_px) handle_size_px = handle_size_min_px;
     handle_start_edge_px = int(val_linear01*(length_px-handle_size_px)+.5);
   }
@@ -157,18 +177,18 @@ void Fl_Slider::draw(int X, int Y, int W, int H) {
 
   Fl_Boxtype box1 = slider();
   if (!box1) {box1 = (Fl_Boxtype)(box()&-2); if (!box1) box1 = FL_UP_BOX;}
-  if (type() == FL_VERT_NICE_SLIDER) {
+  if (type_no_log() == FL_VERT_NICE_SLIDER) {
     draw_box(box1, xsl, ysl, wsl, hsl, FL_GRAY);
     int d = (hsl-4)/2;
     draw_box(FL_THIN_DOWN_BOX, xsl+2, ysl+d, wsl-4, hsl-2*d,selection_color());
-  } else if (type() == FL_HOR_NICE_SLIDER) {
+  } else if (type_no_log() == FL_HOR_NICE_SLIDER) {
     draw_box(box1, xsl, ysl, wsl, hsl, FL_GRAY);
     int d = (wsl-4)/2;
     draw_box(FL_THIN_DOWN_BOX, xsl+d, ysl+2, wsl-2*d, hsl-4,selection_color());
   } else {
     if (wsl>0 && hsl>0) draw_box(box1, xsl, ysl, wsl, hsl, selection_color());
 
-    if (type() != FL_HOR_FILL_SLIDER && type() != FL_VERT_FILL_SLIDER &&
+    if (type_no_log() != FL_HOR_FILL_SLIDER && type_no_log() != FL_VERT_FILL_SLIDER &&
         Fl::is_scheme("gtk+")) {
       if (W>H && wsl>(hsl+8)) {
         // Draw horizontal grippers
@@ -210,7 +230,7 @@ void Fl_Slider::draw(int X, int Y, int W, int H) {
 
   draw_label(xsl, ysl, wsl, hsl);
   if (Fl::focus() == this) {
-    if (type() == FL_HOR_FILL_SLIDER || type() == FL_VERT_FILL_SLIDER) draw_focus();
+    if (type_no_log() == FL_HOR_FILL_SLIDER || type_no_log() == FL_VERT_FILL_SLIDER) draw_focus();
     else draw_focus(box1, xsl, ysl, wsl, hsl);
   }
 }
@@ -235,14 +255,15 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
   case FL_DRAG: {
 
     const double val_linear01 =
-      val_linear01_from_value(value(), minimum(), maximum());
+      val_linear01_from_value(value(), minimum(), maximum(),
+                              type() & FL_LOG_SLIDER);
 
     int length_px = (horizontal() ? W : H);
     int mx = (horizontal() ? Fl::event_x()-X : Fl::event_y()-Y);
     int handle_size_px;
     static int offcenter;
 
-    if (type() == FL_HOR_FILL_SLIDER || type() == FL_VERT_FILL_SLIDER) {
+    if (type_no_log() == FL_HOR_FILL_SLIDER || type_no_log() == FL_VERT_FILL_SLIDER) {
 
       handle_size_px = 0;
       if (event == FL_PUSH) {
@@ -256,7 +277,7 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
 
       handle_size_px = int(slider_size_*length_px+.5); if (handle_size_px >= length_px) return 0;
       int T = (horizontal() ? H : W)/2+1;
-      if (type()==FL_VERT_NICE_SLIDER || type()==FL_HOR_NICE_SLIDER) T += 4;
+      if (type_no_log()==FL_VERT_NICE_SLIDER || type_no_log()==FL_HOR_NICE_SLIDER) T += 4;
       if (handle_size_px < T) handle_size_px = T;
       if (event == FL_PUSH) {
         int handle_start_edge_px = int(val_linear01*(length_px-handle_size_px)+.5);
@@ -280,7 +301,10 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
         handle_start_edge_px = length_px-handle_size_px;
         offcenter = mx-handle_start_edge_px; if (offcenter > handle_size_px) offcenter = handle_size_px;
       }
-      v = round(handle_start_edge_px*(maximum()-minimum())/(length_px-handle_size_px) + minimum());
+
+      v = round( value_from_val_linear01( (double)handle_start_edge_px/ (double)(length_px-handle_size_px),
+                                          minimum(), maximum(), type() & FL_LOG_SLIDER ));
+
       // make sure a click outside the sliderbar moves it:
       if (event == FL_PUSH && v == value()) {
         offcenter = handle_size_px/2;

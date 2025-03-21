@@ -522,6 +522,12 @@ static Fl_Menu_Item slider_type_menu[] = {
   { "Horz Fill", 0, nullptr, (void*)FL_HOR_FILL_SLIDER },
   { "Vert Knob", 0, nullptr, (void*)FL_VERT_NICE_SLIDER },
   { "Horz Knob", 0, nullptr, (void*)FL_HOR_NICE_SLIDER },
+  { "Log Vertical",   0, nullptr, (void*)(FL_LOG_SLIDER | 0) },
+  { "Log Horizontal", 0, nullptr, (void*)(FL_LOG_SLIDER | FL_HOR_SLIDER) },
+  { "Log Vert Fill",  0, nullptr, (void*)(FL_LOG_SLIDER | FL_VERT_FILL_SLIDER) },
+  { "Log Horz Fill",  0, nullptr, (void*)(FL_LOG_SLIDER | FL_HOR_FILL_SLIDER) },
+  { "Log Vert Knob",  0, nullptr, (void*)(FL_LOG_SLIDER | FL_VERT_NICE_SLIDER) },
+  { "Log Horz Knob",  0, nullptr, (void*)(FL_LOG_SLIDER | FL_HOR_NICE_SLIDER) },
   { nullptr }
 };
 

@@ -31,6 +31,7 @@
 #define FL_HOR_FILL_SLIDER      3
 #define FL_VERT_NICE_SLIDER     4
 #define FL_HOR_NICE_SLIDER      5
+#define FL_LOG_SLIDER           (1U << 3) /* Bitwise OR with any of the others to specify a log-scale slider */
 
 /**
   The Fl_Slider widget contains a sliding knob inside a box. It is
@@ -60,6 +61,7 @@ class FL_EXPORT Fl_Slider : public Fl_Valuator {
 
   float slider_size_;
   uchar slider_;
+
   void _Fl_Slider();
   void draw_bg(int, int, int, int);
 
@@ -69,6 +71,12 @@ protected:
   void draw(int, int, int, int);
   int handle(int, int, int, int, int);
   void draw() FL_OVERRIDE;
+
+  uchar type_no_log(void)
+  {
+      return type() & (~FL_LOG_SLIDER);
+  }
+
 
 public:
 
