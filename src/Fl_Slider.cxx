@@ -111,37 +111,37 @@ void Fl_Slider::draw_bg(int X, int Y, int W, int H) {
 
 void Fl_Slider::draw(int X, int Y, int W, int H) {
 
-  double val;
+  double val_linear01;
   if (minimum() == maximum())
-    val = 0.5;
+    val_linear01 = 0.5;
   else {
-    val = (value()-minimum())/(maximum()-minimum());
-    if (val > 1.0) val = 1.0;
-    else if (val < 0.0) val = 0.0;
+    val_linear01 = (value()-minimum())/(maximum()-minimum());
+    if (val_linear01 > 1.0) val_linear01 = 1.0;
+    else if (val_linear01 < 0.0) val_linear01 = 0.0;
   }
 
-  int ww = (horizontal() ? W : H);
-  int xx, S;
+  int length_px = (horizontal() ? W : H);
+  int handle_start_edge_px, handle_size_px;
   if (type()==FL_HOR_FILL_SLIDER || type() == FL_VERT_FILL_SLIDER) {
-    S = int(val*ww+.5);
-    if (minimum()>maximum()) {S = ww-S; xx = ww-S;}
-    else xx = 0;
+    handle_size_px = int(val_linear01*length_px+.5);
+    if (minimum()>maximum()) {handle_size_px = length_px-handle_size_px; handle_start_edge_px = length_px-handle_size_px;}
+    else handle_start_edge_px = 0;
   } else {
-    S = int(slider_size_*ww+.5);
-    int T = (horizontal() ? H : W)/2+1;
-    if (type()==FL_VERT_NICE_SLIDER || type()==FL_HOR_NICE_SLIDER) T += 4;
-    if (S < T) S = T;
-    xx = int(val*(ww-S)+.5);
+    handle_size_px = int(slider_size_*length_px+.5);
+    int handle_size_min_px = (horizontal() ? H : W)/2+1;
+    if (type()==FL_VERT_NICE_SLIDER || type()==FL_HOR_NICE_SLIDER) handle_size_min_px += 4;
+    if (handle_size_px < handle_size_min_px) handle_size_px = handle_size_min_px;
+    handle_start_edge_px = int(val_linear01*(length_px-handle_size_px)+.5);
   }
   int xsl, ysl, wsl, hsl;
   if (horizontal()) {
-    xsl = X+xx;
-    wsl = S;
+    xsl = X+handle_start_edge_px;
+    wsl = handle_size_px;
     ysl = Y;
     hsl = H;
   } else {
-    ysl = Y+xx;
-    hsl = S;
+    ysl = Y+handle_start_edge_px;
+    hsl = handle_size_px;
     xsl = X;
     wsl = W;
   }
@@ -167,36 +167,36 @@ void Fl_Slider::draw(int X, int Y, int W, int H) {
         // Draw horizontal grippers
         int yy, hh;
         hh = hsl-8;
-        xx = xsl+(wsl-hsl-4)/2;
+        handle_start_edge_px = xsl+(wsl-hsl-4)/2;
         yy = ysl+3;
 
         fl_color(fl_darker(selection_color()));
-        fl_line(xx, yy+hh, xx+hh, yy);
-        fl_line(xx+6, yy+hh, xx+hh+6, yy);
-        fl_line(xx+12, yy+hh, xx+hh+12, yy);
+        fl_line(handle_start_edge_px, yy+hh, handle_start_edge_px+hh, yy);
+        fl_line(handle_start_edge_px+6, yy+hh, handle_start_edge_px+hh+6, yy);
+        fl_line(handle_start_edge_px+12, yy+hh, handle_start_edge_px+hh+12, yy);
 
-        xx++;
+        handle_start_edge_px++;
         fl_color(fl_lighter(selection_color()));
-        fl_line(xx, yy+hh, xx+hh, yy);
-        fl_line(xx+6, yy+hh, xx+hh+6, yy);
-        fl_line(xx+12, yy+hh, xx+hh+12, yy);
+        fl_line(handle_start_edge_px, yy+hh, handle_start_edge_px+hh, yy);
+        fl_line(handle_start_edge_px+6, yy+hh, handle_start_edge_px+hh+6, yy);
+        fl_line(handle_start_edge_px+12, yy+hh, handle_start_edge_px+hh+12, yy);
       } else if (H>W && hsl>(wsl+8)) {
         // Draw vertical grippers
         int yy;
-        xx = xsl+4;
-        ww = wsl-8;
+        handle_start_edge_px = xsl+4;
+        length_px = wsl-8;
         yy = ysl+(hsl-wsl-4)/2;
 
         fl_color(fl_darker(selection_color()));
-        fl_line(xx, yy+ww, xx+ww, yy);
-        fl_line(xx, yy+ww+6, xx+ww, yy+6);
-        fl_line(xx, yy+ww+12, xx+ww, yy+12);
+        fl_line(handle_start_edge_px, yy+length_px, handle_start_edge_px+length_px, yy);
+        fl_line(handle_start_edge_px, yy+length_px+6, handle_start_edge_px+length_px, yy+6);
+        fl_line(handle_start_edge_px, yy+length_px+12, handle_start_edge_px+length_px, yy+12);
 
         yy++;
         fl_color(fl_lighter(selection_color()));
-        fl_line(xx, yy+ww, xx+ww, yy);
-        fl_line(xx, yy+ww+6, xx+ww, yy+6);
-        fl_line(xx, yy+ww+12, xx+ww, yy+12);
+        fl_line(handle_start_edge_px, yy+length_px, handle_start_edge_px+length_px, yy);
+        fl_line(handle_start_edge_px, yy+length_px+6, handle_start_edge_px+length_px, yy+6);
+        fl_line(handle_start_edge_px, yy+length_px+12, handle_start_edge_px+length_px, yy+12);
       }
     }
   }
@@ -227,62 +227,62 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
     // fall through ...
   case FL_DRAG: {
 
-    double val;
+    double val_linear01;
     if (minimum() == maximum())
-      val = 0.5;
+      val_linear01 = 0.5;
     else {
-      val = (value()-minimum())/(maximum()-minimum());
-      if (val > 1.0) val = 1.0;
-      else if (val < 0.0) val = 0.0;
+      val_linear01 = (value()-minimum())/(maximum()-minimum());
+      if (val_linear01 > 1.0) val_linear01 = 1.0;
+      else if (val_linear01 < 0.0) val_linear01 = 0.0;
     }
 
-    int ww = (horizontal() ? W : H);
+    int length_px = (horizontal() ? W : H);
     int mx = (horizontal() ? Fl::event_x()-X : Fl::event_y()-Y);
-    int S;
+    int handle_size_px;
     static int offcenter;
 
     if (type() == FL_HOR_FILL_SLIDER || type() == FL_VERT_FILL_SLIDER) {
 
-      S = 0;
+      handle_size_px = 0;
       if (event == FL_PUSH) {
-        int xx = int(val*ww+.5);
-        offcenter = mx-xx;
+        int handle_start_edge_px = int(val_linear01*length_px+.5);
+        offcenter = mx-handle_start_edge_px;
         if (offcenter < -10 || offcenter > 10) offcenter = 0;
         else return 1;
       }
 
     } else {
 
-      S = int(slider_size_*ww+.5); if (S >= ww) return 0;
+      handle_size_px = int(slider_size_*length_px+.5); if (handle_size_px >= length_px) return 0;
       int T = (horizontal() ? H : W)/2+1;
       if (type()==FL_VERT_NICE_SLIDER || type()==FL_HOR_NICE_SLIDER) T += 4;
-      if (S < T) S = T;
+      if (handle_size_px < T) handle_size_px = T;
       if (event == FL_PUSH) {
-        int xx = int(val*(ww-S)+.5);
-        offcenter = mx-xx;
+        int handle_start_edge_px = int(val_linear01*(length_px-handle_size_px)+.5);
+        offcenter = mx-handle_start_edge_px;
         if (offcenter < 0) offcenter = 0;
-        else if (offcenter > S) offcenter = S;
+        else if (offcenter > handle_size_px) offcenter = handle_size_px;
         else return 1;
       }
     }
 
-    int xx = mx-offcenter;
+    int handle_start_edge_px = mx-offcenter;
     double v = 0;
     char tryAgain = 1;
     while (tryAgain)
     {
       tryAgain = 0;
-      if (xx < 0) {
-        xx = 0;
+      if (handle_start_edge_px < 0) {
+        handle_start_edge_px = 0;
         offcenter = mx; if (offcenter < 0) offcenter = 0;
-      } else if (xx > (ww-S)) {
-        xx = ww-S;
-        offcenter = mx-xx; if (offcenter > S) offcenter = S;
+      } else if (handle_start_edge_px > (length_px-handle_size_px)) {
+        handle_start_edge_px = length_px-handle_size_px;
+        offcenter = mx-handle_start_edge_px; if (offcenter > handle_size_px) offcenter = handle_size_px;
       }
-      v = round(xx*(maximum()-minimum())/(ww-S) + minimum());
+      v = round(handle_start_edge_px*(maximum()-minimum())/(length_px-handle_size_px) + minimum());
       // make sure a click outside the sliderbar moves it:
       if (event == FL_PUSH && v == value()) {
-        offcenter = S/2;
+        offcenter = handle_size_px/2;
         event = FL_DRAG;
         tryAgain = 1;
       }
