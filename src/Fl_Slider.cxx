@@ -109,16 +109,23 @@ void Fl_Slider::draw_bg(int X, int Y, int W, int H) {
   }
 }
 
+static double val_linear01_from_value(const double value,
+                                      const double min,
+                                      const double max) {
+  if (min == max)
+    return 0.5;
+
+  const double val_linear01 =
+    (value-min)/(max-min);
+  if (val_linear01 > 1.0) return 1.0;
+  if (val_linear01 < 0.0) return 0.0;
+  return val_linear01;
+}
+
 void Fl_Slider::draw(int X, int Y, int W, int H) {
 
-  double val_linear01;
-  if (minimum() == maximum())
-    val_linear01 = 0.5;
-  else {
-    val_linear01 = (value()-minimum())/(maximum()-minimum());
-    if (val_linear01 > 1.0) val_linear01 = 1.0;
-    else if (val_linear01 < 0.0) val_linear01 = 0.0;
-  }
+  const double val_linear01 =
+    val_linear01_from_value(value(), minimum(), maximum());
 
   int length_px = (horizontal() ? W : H);
   int handle_start_edge_px, handle_size_px;
@@ -227,14 +234,8 @@ int Fl_Slider::handle(int event, int X, int Y, int W, int H) {
     // fall through ...
   case FL_DRAG: {
 
-    double val_linear01;
-    if (minimum() == maximum())
-      val_linear01 = 0.5;
-    else {
-      val_linear01 = (value()-minimum())/(maximum()-minimum());
-      if (val_linear01 > 1.0) val_linear01 = 1.0;
-      else if (val_linear01 < 0.0) val_linear01 = 0.0;
-    }
+    const double val_linear01 =
+      val_linear01_from_value(value(), minimum(), maximum());
 
     int length_px = (horizontal() ? W : H);
     int mx = (horizontal() ? Fl::event_x()-X : Fl::event_y()-Y);
