@@ -30,7 +30,14 @@ void Fl_Slider::_Fl_Slider() {
   slider_size_ = 0;
   slider_ = 0; // FL_UP_BOX;
 
+#if 0
   flags.log = 0;
+#else
+  // hard-coded log values, for testing
+  flags.log = 1;
+  minimum(1e0);
+  maximum(1e3);
+#endif
 }
 
 /**
