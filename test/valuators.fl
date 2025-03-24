@@ -17,37 +17,37 @@ Function {} {open
         label 0
         user_data {"Fl_Slider FL_VERT_SLIDER"}
         callback callback
-        tooltip {Vertical Slider} xywh {30 45 20 145} selection_color 1 labelsize 8 align 1
+        tooltip {Vertical Slider} xywh {30 45 20 145} type {Log Vertical} selection_color 1 labelsize 8 align 1 minimum 1 maximum 1000
       }
       Fl_Slider {} {
         label FL_VERT_FILL_SLIDER
         user_data {"Fl_Slider FL_VERT_FILL_SLIDER"}
         callback callback
-        xywh {70 55 20 145} type {Vert Fill} selection_color 1 labelsize 8
+        xywh {70 55 20 145} type {Log Vert Fill} selection_color 1 labelsize 8 minimum 1 maximum 1000
       }
       Fl_Slider {} {
         label FL_VERT_NICE_SLIDER
         user_data {"Fl_Slider FL_VERT_NICE_SLIDER"}
         callback callback
-        xywh {105 45 20 145} type {Vert Knob} box FLAT_BOX color 10 selection_color 1 labelsize 8 align 1
+        xywh {105 45 20 145} type {Log Vert Knob} box FLAT_BOX color 10 selection_color 1 labelsize 8 align 1 minimum 1 maximum 1000
       }
       Fl_Slider {} {
         label FL_HORIZONTAL
         user_data {"Fl_Slider FL_HORIZONTAL"}
         callback callback
-        xywh {140 80 130 20} type Horizontal selection_color 1 labelsize 8
+        xywh {140 80 130 20} type {Log Horizontal} selection_color 1 labelsize 8 minimum 1 maximum 1000
       }
       Fl_Slider {} {
         label FL_HOR_FILL_SLIDER
         user_data {"Fl_Slider FL_HOR_FILL_SLIDER"}
         callback callback
-        xywh {140 120 130 20} type {Horz Fill} selection_color 1 labelsize 8
+        xywh {140 120 130 20} type {Log Horz Fill} selection_color 1 labelsize 8 minimum 1 maximum 1000
       }
       Fl_Slider {} {
         label FL_HOR_NICE_SLIDER
         user_data {"Fl_Slider FL_HOR_NICE_SLIDER"}
         callback callback
-        xywh {140 160 130 20} type {Horz Knob} box FLAT_BOX color 10 selection_color 1 labelsize 8
+        xywh {140 160 130 20} type {Log Horz Knob} box FLAT_BOX color 10 selection_color 1 labelsize 8 minimum 1 maximum 1000
       }
     }
     Fl_Group {} {
@@ -58,37 +58,37 @@ Function {} {open
         label 0
         user_data {"FL_VERT_SLIDER"}
         callback callback
-        tooltip {Value Slider} xywh {30 260 30 145} selection_color 1 labelsize 8 align 1
+        tooltip {Value Slider} xywh {30 260 30 145} type {Log Vertical} selection_color 1 labelsize 8 align 1 minimum 1 maximum 1000
       }
       Fl_Value_Slider {} {
         label FL_VERT_FILL_SLIDER
         user_data {"Fl_Value_Slider FL_VERT_FILL_SLIDER"}
         callback callback
-        xywh {70 275 30 140} type {Vert Fill} selection_color 1 labelsize 8
+        xywh {70 275 30 140} type {Log Vert Fill} selection_color 1 labelsize 8 minimum 1 maximum 1000
       }
       Fl_Value_Slider {} {
         label FL_VERT_NICE_SLIDER
         user_data {"Fl_Value_Slider FL_VERT_NICE_SLIDER"}
         callback callback
-        xywh {110 260 20 145} type {Vert Knob} box FLAT_BOX color 10 selection_color 1 labelsize 8 align 1
+        xywh {110 260 20 145} type {Log Vert Knob} box FLAT_BOX color 10 selection_color 1 labelsize 8 align 1 minimum 1 maximum 1000
       }
       Fl_Value_Slider {} {
         label FL_HOR_SLIDER
         user_data {"Fl_Value_Slider FL_HOR_SLIDER"}
         callback callback
-        xywh {140 290 130 20} type Horizontal selection_color 1 labelsize 8
+        xywh {140 290 130 20} type {Log Horizontal} selection_color 1 labelsize 8 minimum 1 maximum 1000
       }
       Fl_Value_Slider {} {
         label FL_HOR_FILL_SLIDER
         user_data {"Fl_Value_Slider FL_HOR_FILL_SLIDER"}
         callback callback
-        xywh {140 330 130 20} type {Horz Fill} selection_color 1 labelsize 8
+        xywh {140 330 130 20} type {Log Horz Fill} selection_color 1 labelsize 8 minimum 1 maximum 1000
       }
       Fl_Value_Slider {} {
         label FL_HOR_NICE_SLIDER
         user_data {"Fl_Value_Slider FL_HOR_NICE_SLIDER"}
         callback callback
-        xywh {140 370 130 20} type {Horz Knob} box FLAT_BOX color 10 selection_color 1 labelsize 8
+        xywh {140 370 130 20} type {Log Horz Knob} box FLAT_BOX color 10 selection_color 1 labelsize 8 minimum 1 maximum 1000
       }
     }
     Fl_Group {} {
